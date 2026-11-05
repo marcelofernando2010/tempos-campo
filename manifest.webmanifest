@@ -1,0 +1,16 @@
+{
+  "name": "Tempos e Movimentos em Campo",
+  "short_name": "Tempos Campo",
+  "description": "Registro offline de tempos e movimentos de equipamentos para comparação com telemetria",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2f5f4",
+  "theme_color": "#0f3d2e",
+  "lang": "pt-BR",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
