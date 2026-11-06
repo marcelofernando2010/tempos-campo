@@ -1,5 +1,5 @@
 // Service worker: guarda o app no celular para funcionar sem internet
-const CACHE = 'tempos-campo-v17';
+const CACHE = 'tempos-campo-v18';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

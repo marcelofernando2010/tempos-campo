@@ -108,8 +108,12 @@ input.up::placeholder,textarea.up::placeholder{text-transform:none}
 .kpis small{font-size:12px;color:var(--muted)}
 .cfgit{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding:4px 0}
 .cfgmain{flex:1;display:flex;align-items:center;min-height:48px;background:none;border:0;text-align:left;font-size:15px;font-weight:600;font-family:inherit;color:var(--ink);padding:0 2px;min-width:0;cursor:pointer}
-.cfgmain .nm,.stopit .nm{overflow:hidden;text-overflow:ellipsis}
+.cfgmain .nm,.stopit .nm{overflow-wrap:anywhere;hyphens:auto;-webkit-hyphens:auto}
 .act.big{min-height:64px;font-size:17px}
+.act{overflow-wrap:anywhere;word-break:normal;hyphens:auto;-webkit-hyphens:auto}
+.act.lg,.act.big.lg{font-size:15px}
+.act.xl,.act.big.xl{font-size:13.5px;letter-spacing:-.2px}
+.obs .now .name.long{font-size:16px;overflow-wrap:anywhere}
 /* ---- cabeçalho / tela inicial ---- */
 .brand{display:flex;align-items:center;gap:10px}
 .brand b{display:block;font-size:16px;line-height:1.1}
@@ -265,33 +269,96 @@ const GROUPS = {
   X:{name:'Perdida',    color:'#c62828'}
 };
 const GORDER = ['P','A','C','M','X'];
+// Colhedora e Transbordo: catálogo oficial de operações da telemetria (planilha Operações Apk) — [nome, cor, grupo, principal, código]
+const CATALOG_V = 1;
 const PROFILE_DEFS = {
   colhedora: { label:'Colhedora', link:'Transbordo(s) atendendo', acts:[
-    ['Colhendo','#2e7d32','P',1],
-    ['Manobra de cabeceira','#f9a825','A',1],
-    ['Deslocamento sem colher','#5c6bc0','A',0],
-    ['Embuchamento / limpeza','#8e24aa','A',0],
-    ['Abastecimento','#455a64','A',0],
-    ['Troca de turno / refeição','#8d8d8d','A',0],
-    ['Chuva / clima','#0288d1','C',0],
-    ['Troca de facas','#ad1457','M',0],
-    ['Manutenção / quebra','#4e342e','M',0],
-    ['Aguardando transbordo','#ef6c00','X',1],
-    ['Parada operacional','#c62828','X',0]
+    ["CORTE DE CANA MECANIZADO QUEIMADA", "#1b5e20", "P", 1, "360"],
+    ["CORTE DE CANA MECANIZADO CRUA", "#1b5e20", "P", 1, "357"],
+    ["MANOBRA AUXILIAR", "#ef6c00", "A", 1, "1584"],
+    ["AUTODESLOCAMENTO MAQUINA", "#f9a825", "A", 1, "285"],
+    ["TROCA FAQUINHA", "#c62828", "A", 0, "1992"],
+    ["PARADA AVALIAR QUALIDADE", "#c62828", "A", 0, "1930"],
+    ["LIMPEZA UMIDA", "#c62828", "A", 0, "1924"],
+    ["LIMPEZA SECO", "#c62828", "A", 0, "1914"],
+    ["MEDICAO TEMPERATURA", "#c62828", "A", 0, "1911"],
+    ["REALIZANDO CHECK LIST", "#c62828", "A", 0, "991"],
+    ["TROCA TURNO", "#c62828", "A", 0, "985"],
+    ["SENDO TRANSPORTADO", "#c62828", "A", 0, "979"],
+    ["REFEICAO", "#c62828", "A", 0, "976"],
+    ["ABAST COMBUSTIVEL", "#c62828", "A", 0, "903"],
+    ["CHUVA SOLO UMIDO", "#212121", "C", 0, "966"],
+    ["SINCRONISMO FACAO", "#6a1b9a", "M", 0, "1994"],
+    ["TROCA FACAO", "#6a1b9a", "M", 0, "1993"],
+    ["MANUT AUTOMACAO", "#6a1b9a", "M", 0, "1919"],
+    ["AGUARD PECA", "#6a1b9a", "M", 0, "1918"],
+    ["MANUT POR ACIDENTE", "#6a1b9a", "M", 0, "1663"],
+    ["MANUT PREVENTIVA", "#6a1b9a", "M", 0, "960"],
+    ["MANUT MECANICA", "#6a1b9a", "M", 0, "959"],
+    ["MANUT ELETRICA", "#6a1b9a", "M", 0, "957"],
+    ["AGUARD MECANICO", "#6a1b9a", "M", 0, "920"],
+    ["AGUARD ELETRICISTA", "#6a1b9a", "M", 0, "917"],
+    ["AGUARD COMBOIO", "#6a1b9a", "M", 0, "916"],
+    ["PAUSA NECES FISIOLOGICA", "#c62828", "X", 0, "9020"],
+    ["EMBUCHAMENTO", "#c62828", "X", 0, "1907"],
+    ["AGUARD PROJETO PILOTO", "#c62828", "X", 0, "1511"],
+    ["IMPACTO INDUSTRIAL", "#c62828", "X", 0, "964"],
+    ["FALTA OPERADOR MOTORISTA", "#c62828", "X", 0, "945"],
+    ["CURSO TREINAMENTO", "#c62828", "X", 0, "936"],
+    ["AGUARD MANOBRA TRANSBORDO", "#c62828", "X", 0, "932"],
+    ["AGUARD PIPA", "#c62828", "X", 0, "930"],
+    ["AGUARD TRATOR TRANSBORDO", "#c62828", "X", 0, "925"],
+    ["AGUARD REBOQUE", "#c62828", "X", 0, "923"],
+    ["AGUARD PRANCHA", "#c62828", "X", 0, "922"],
+    ["AGUARD CAMINHAO", "#c62828", "X", 0, "911"],
+    ["AGUARD COMBATE DE INCENDIO", "#c62828", "X", 0, "599"]
   ], notes:['Sem transbordo disponível','Embuchamento','Pedra / toco','Cana acamada','Falha no extrator','Falha no picador','Terreno úmido','Fim de talhão','Ordem do líder'] },
   transbordo: { label:'Transbordo', link:'Colhedora atendida', acts:[
-    ['Recebendo da colhedora','#2e7d32','P',1],
-    ['Deslocando carregado','#6a1b9a','P',1],
-    ['Transferindo p/ caminhão','#00897b','P',1],
-    ['Deslocando vazio','#5c6bc0','P',1],
-    ['Manobra','#f9a825','A',1],
-    ['Abastecimento','#455a64','A',0],
-    ['Troca de turno / refeição','#8d8d8d','A',0],
-    ['Chuva / clima','#0288d1','C',0],
-    ['Manutenção / quebra','#4e342e','M',0],
-    ['Aguardando caminhão','#ef6c00','X',1],
-    ['Aguardando colhedora','#bf360c','X',1],
-    ['Parada operacional','#c62828','X',0]
+    ["CARREGAMENTO DE CANA", "#1b5e20", "P", 1, "1331"],
+    ["DESLOCAMENTO CARREGADO", "#1b5e20", "P", 1, "1330"],
+    ["TRANSBORDAMENTO", "#29b6f6", "P", 1, "304"],
+    ["DESLOCAMENTO VAZIO", "#f9a825", "A", 1, "1968"],
+    ["MANOBRA AUXILIAR", "#ef6c00", "A", 1, "1584"],
+    ["DESLOC MUDANÇA DE AREA", "#c62828", "A", 0, "1984"],
+    ["PARADA AVALIAR QUALIDADE", "#c62828", "A", 0, "1930"],
+    ["LIMPEZA UMIDA", "#c62828", "A", 0, "1924"],
+    ["LIMPEZA A SECO", "#c62828", "A", 0, "1914"],
+    ["FILA UNICA DE TRANSBORDO", "#c62828", "A", 1, "995"],
+    ["REALIZANDO CHECK LIST", "#c62828", "A", 0, "991"],
+    ["TROCA TURNO", "#c62828", "A", 0, "985"],
+    ["SENDO TRANSPORTADO", "#c62828", "A", 0, "979"],
+    ["REFEICAO", "#c62828", "A", 0, "976"],
+    ["ABAST COMBUSTIVEL", "#c62828", "A", 0, "903"],
+    ["REBOQUE", "#c62828", "A", 0, "489"],
+    ["CHUVA SOLO UMIDO", "#212121", "C", 0, "966"],
+    ["MANUT AUTOMACAO", "#6a1b9a", "M", 0, "1919"],
+    ["AGUARD PECA", "#6a1b9a", "M", 0, "1918"],
+    ["MANUT POR ACIDENTE", "#6a1b9a", "M", 0, "1663"],
+    ["MANUT PREVENTIVA", "#6a1b9a", "M", 0, "960"],
+    ["MANUT MECANICA", "#6a1b9a", "M", 0, "959"],
+    ["MANUT ELETRICA", "#6a1b9a", "M", 0, "957"],
+    ["MANUT BORRACHARIA", "#6a1b9a", "M", 0, "956"],
+    ["IMPLEMENTO QUEBRADO", "#6a1b9a", "M", 0, "953"],
+    ["AGUARD MECANICO", "#6a1b9a", "M", 0, "920"],
+    ["AGUARD ELETRICISTA", "#6a1b9a", "M", 0, "917"],
+    ["AGUARD COMBOIO", "#6a1b9a", "M", 0, "916"],
+    ["AGUARD BORRACHEIRO", "#6a1b9a", "M", 0, "910"],
+    ["PAUSA NECES FISIOLOGICA", "#c62828", "X", 0, "9020"],
+    ["TRAJETO INTERDITADO", "#c62828", "X", 0, "1908"],
+    ["AGUARD PROJETO PILOTO", "#c62828", "X", 0, "1511"],
+    ["LIMPEZA DE PATIO TRANSBORDAMENTO", "#c62828", "X", 0, "997"],
+    ["COLHEDORA PARADA", "#c62828", "X", 0, "996"],
+    ["IMPACTO INDUSTRIAL", "#c62828", "X", 0, "964"],
+    ["FALTA OPERADOR MOTORISTA", "#c62828", "X", 0, "945"],
+    ["CURSO TREINAMENTO", "#c62828", "X", 0, "936"],
+    ["AGUARD PARA DESCARREGAR", "#c62828", "X", 0, "933"],
+    ["AGUARD PIPA", "#c62828", "X", 0, "930"],
+    ["AGUARD REBOQUE", "#c62828", "X", 0, "923"],
+    ["AGUARD PRANCHA", "#c62828", "X", 0, "922"],
+    ["AGUARD IMPLEMENTO", "#c62828", "X", 0, "918"],
+    ["AGUARD CARREGAMENTO CANA", "#c62828", "X", 0, "913"],
+    ["AGUARD CAMINHÃO", "#c62828", "X", 0, "911"],
+    ["AGUARD COMBATE DE INCENDIO", "#c62828", "X", 0, "599"]
   ], notes:['Colhedora parada','Sem caminhão no ponto','Atolamento','Perda de cana na transferência','Carreador ruim','Falha mecânica','Ordem do líder'] },
   canavieiro: { label:'Caminhão canavieiro', link:'Frente / transbordo', acts:[
     ['Carregando (transbordo)','#1565c0','P',1],
@@ -313,7 +380,7 @@ const UP = v => String(v ?? '').toLocaleUpperCase('pt-BR');
 function buildProfiles(){
   const o = {};
   for (const k in PROFILE_DEFS) { const p = PROFILE_DEFS[k];
-    o[k] = { label:p.label, link:p.link, acts:p.acts.map(a=>({id:uid(), code:'', name:UP(a[0]), color:a[1], cat:a[2], fav:!!a[3]})), notes:p.notes.map(UP) }; }
+    o[k] = { label:p.label, link:p.link, acts:p.acts.map(a=>({id:uid(), code:String(a[4]||''), name:UP(a[0]), color:a[1], cat:a[2], fav:!!a[3]})), notes:p.notes.map(UP) }; }
   return o;
 }
 // completa dados de versões anteriores (sem grupo / código / principal)
@@ -322,6 +389,15 @@ function migrate(d){
     for (const k in d.settings.profiles) { const P = d.settings.profiles[k]; P.acts.forEach(a => { a.name = UP(a.name); a.code = UP(a.code); }); P.notes = (P.notes||[]).map(UP); }
     (d.equipments||[]).forEach(e => { e.code = UP(e.code); e.type = UP(e.type); });
     d.settings.observer = UP(d.settings.observer); d.settings.lastEquip = UP(d.settings.lastEquip); d.settings.upperV = 1;
+  }
+  if ((d.settings.catalogV||0) < CATALOG_V) {   // aplica o catálogo de operações da telemetria em instalações existentes
+    const fresh = buildProfiles();
+    ['colhedora','transbordo'].forEach(k => {
+      const P = d.settings.profiles[k], F = fresh[k]; if (!P) { d.settings.profiles[k] = F; return; }
+      if (!P.acts.some(a => a.code)) P.acts = F.acts;            // cadastro ainda sem códigos → troca pelo catálogo
+      else F.acts.forEach(n => { if (!P.acts.some(a => String(a.code) === n.code)) P.acts.push(n); });   // já tinha códigos → só acrescenta o que falta
+    });
+    d.settings.catalogV = CATALOG_V;
   }
   if (d.settings.gpsV !== 2) { d.settings.gps = true; d.settings.gpsInt = d.settings.gpsInt || 5; d.settings.gpsV = 2; }
   (d.sessions||[]).forEach(s => { if (!s.track) s.track = []; });
@@ -527,7 +603,8 @@ function viewObserve(){
   const btn = (a, big) => {
     const isCur = cur && cur.actId === a.id;
     const sub = [a.cat !== 'P' ? gName(a.cat) : '', a.code].filter(Boolean).join(' · ');
-    return `<button class="act ${big?'big':''} ${isCur?'cur':''}" data-act="${a.id}" style="background:${a.color};color:${textColor(a.color)}">${isCur?'● ':''}${esc(a.name)}${sub?`<small>${esc(sub)}</small>`:''}</button>`;
+    const ln = Math.max(...a.name.split(/\s+/).map(w => w.length)), sz = ln > 13 || a.name.length > 26 ? 'xl' : ln > 10 || a.name.length > 18 ? 'lg' : '';
+    return `<button class="act ${big?'big':''} ${sz} ${isCur?'cur':''}" data-act="${a.id}" style="background:${a.color};color:${textColor(a.color)}">${isCur?'● ':''}${esc(a.name)}${sub?`<small>${esc(sub)}</small>`:''}</button>`;
   };
   const all = actsOf(s);
   const favs = all.filter(a => a.fav).map(a => btn(a, true)).join('');
@@ -557,7 +634,7 @@ function viewObserve(){
         <span class="gic">${GICONS[cg] || GICONS.idle}</span>
         <div class="nowtx">
           <div class="lbl">${cur?esc(gName(cg))+(cur.actCode?' · cód. '+esc(cur.actCode):''):'Pronto para iniciar'}</div>
-          <div class="name"><i class="cdot" style="background:${cur?cur.color:'#c4ccc8'}"></i>${cur?esc(cur.actName):'Toque na operação atual'}</div>
+          <div class="name ${cur && cur.actName.length > 16 ? 'long' : ''}"><i class="cdot" style="background:${cur?cur.color:'#c4ccc8'}"></i>${cur?esc(cur.actName):'Toque na operação atual'}</div>
         </div>
         <div class="tbox ${cur?'':'idle'}"><div class="timer" ${cur?`data-since="${cur.start}"`:''}>${cur?fmtDur(now()-cur.start):'00:00'}</div>${cur?`<div class="since">desde ${hms(cur.start)}</div>`:'<div class="since">aguardando</div>'}</div>
       </div>
@@ -1525,7 +1602,7 @@ function viewConfig(){
           <button class="btn dangerfill sm" id="dFactory">Restaurar</button></div>
       </div>
     </div>
-    <div class="muted" style="text-align:center;margin:8px 0 16px">Tempos em Campo · v2.6 · CCT cana · funciona offline</div>`;
+    <div class="muted" style="text-align:center;margin:8px 0 16px">Tempos em Campo · v2.7 · CCT cana · funciona offline</div>`;
 }
 
 // ---------- cadastro de equipamentos ----------
